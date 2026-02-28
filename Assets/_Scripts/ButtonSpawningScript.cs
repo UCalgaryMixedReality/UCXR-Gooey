@@ -1,70 +1,78 @@
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 
-public class SpawnCubeOnMenuButton : MonoBehaviour
+public class SpawnPrefabOnMenuButton : MonoBehaviour
 {
-    [Header("Cube Settings")]
-    public GameObject cubePrefab;
-    public float spawnDistanceFromCamera = 0.5f;
+    [Header("Prefab")]
+    public GameObject prefab;
 
-    [Header("References")]
-    public Transform mainCamera;
-    public UnityEvent onMenuButtonPressed;
+    [Header("Leap Hand Reference")]
+    public Transform leftHandTransform;
 
-    private void Reset()
+    [Header("Menu Button Object")]
+    public GameObject menuButtonObject;
+
+    [Header("Hand-Relative Offsets")]
+    public Vector3 localPositionOffset = new Vector3(0.05f, 0f, 0f);
+    public Vector3 localRotationOffset = Vector3.zero;
+
+    [Header("Calibration")]
+    [Tooltip("Enable to freely move/rotate the spawned prefab in Play Mode")]
+    public bool calibrationMode = false;
+
+    private GameObject spawnedPrefab;
+    private bool isToggledOn = false;
+
+    void Update()
     {
-        // Automatically tries to fill in camera reference
-        if (Camera.main != null)
-            mainCamera = Camera.main.transform;
-    }
-
-    private void Awake()
-    {
-        // Hook event so calling OnMenuButtonPressed() spawns cube
-        onMenuButtonPressed.AddListener(SpawnCube);
-    }
-
-    public void SpawnCube()
-    {
-        if (cubePrefab == null)
+        // Hide when menu button disappears
+        if (!menuButtonObject.activeInHierarchy)
         {
-            Debug.LogWarning("Cube Prefab is missing!");
+            if (spawnedPrefab != null)
+                spawnedPrefab.SetActive(false);
             return;
         }
 
-        if (mainCamera == null)
-        {
-            Debug.LogWarning("Main Camera missing!");
+        if (spawnedPrefab == null || !isToggledOn)
             return;
-        }
 
-        // Spawn cube in front of camera (works well in the Playground scene)
-        Vector3 spawnPos = mainCamera.position + mainCamera.forward * spawnDistanceFromCamera;
+        // Position always follows
+        spawnedPrefab.transform.localPosition = localPositionOffset;
 
-        GameObject cube = Instantiate(cubePrefab, spawnPos, Quaternion.identity);
-
-        // Ensure cube has physics
-        if (cube.GetComponent<Rigidbody>() == null)
+        // Rotation control
+        if (!calibrationMode)
         {
-            Rigidbody rb = cube.AddComponent<Rigidbody>();
-            rb.mass = 0.5f;
-            rb.angularDamping = 0.05f;
+            spawnedPrefab.transform.localRotation = Quaternion.Euler(localRotationOffset);
         }
-
-        // Add collider if missing
-        if (cube.GetComponent<Collider>() == null)
+        else
         {
-            BoxCollider col = cube.AddComponent<BoxCollider>();
-            col.size = Vector3.one;
+            // Capture live rotation while calibrating
+            localRotationOffset = spawnedPrefab.transform.localRotation.eulerAngles;
         }
-
-        Debug.Log("Spawned cube from menu button.");
     }
 
-    // This gets called from the Ultraleap Menu Button
     public void OnMenuButtonPressed()
     {
-        Debug.Log("Buttom Pressed");
-        onMenuButtonPressed?.Invoke();
+        isToggledOn = !isToggledOn;
+
+        if (isToggledOn)
+            ShowPrefab();
+        else
+            HidePrefab();
+    }
+
+    void ShowPrefab()
+    {
+        if (spawnedPrefab == null)
+        {
+            spawnedPrefab = Instantiate(prefab, leftHandTransform);
+        }
+
+        spawnedPrefab.SetActive(true);
+    }
+
+    void HidePrefab()
+    {
+        if (spawnedPrefab != null)
+            spawnedPrefab.SetActive(false);
     }
 }
