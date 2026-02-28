@@ -23,14 +23,14 @@ namespace Leap.Examples
 
         private void Start()
         {
-            if (Physics.autoSyncTransforms)
-            {
-                Debug.LogWarning(
-                    "Physics.autoSyncTransforms is enabled. This will cause Interaction "
-                + "Buttons and similar elements to 'wobble' when this script is used to "
-                + "move a parent transform. You can modify this setting in "
-                + "Edit->Project Settings->Physics.");
-            }
+            //if (Physics.autoSyncTransforms)
+            //{
+            //    Debug.LogWarning(
+            //        "Physics.autoSyncTransforms is enabled. This will cause Interaction "
+            //    + "Buttons and similar elements to 'wobble' when this script is used to "
+            //    + "move a parent transform. You can modify this setting in "
+            //    + "Edit->Project Settings->Physics.");
+            //}
         }
 
         private void Update()
