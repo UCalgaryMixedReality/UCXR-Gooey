@@ -13,6 +13,7 @@ public class GlobalSceneManager : MonoBehaviour
     public static GlobalSceneManager Instance;
     [SerializeField] private RawImage loadingIcon;
     [SerializeField] private GameObject loadingCanvas;
+    private bool isLoading;
     void Awake()
     {
         if (Instance == null)
@@ -24,30 +25,35 @@ public class GlobalSceneManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-    }
-
-    void Start()
-    {
+        
         LoadScene("Main");
     }
 
-    void Update()
+    void LateUpdate()
     {
-        float speed = 100;
-        loadingIcon.transform.Rotate(0,0, -speed * Time.deltaTime);
+        if (isLoading)
+        {
+            float speed = 500;
+            loadingIcon.transform.Rotate(0,0, -speed * Time.deltaTime);
+        }
     }
-
+    private void toggleLoading()
+    {
+        isLoading = !isLoading;
+    }
     public async void LoadScene(string sceneName)
     {
         var scene = SceneManager.LoadSceneAsync(sceneName);
         scene.allowSceneActivation = false;
-                loadingCanvas.SetActive(true);
+        toggleLoading();
+        loadingCanvas.SetActive(true);
         do
         {
             // custom logic if needed for loading screen
         } while (scene.progress < 0.9f);
         await Task.Delay(5000);
         scene.allowSceneActivation = true;
+        toggleLoading();
         loadingCanvas.SetActive(false);
     }
 }
