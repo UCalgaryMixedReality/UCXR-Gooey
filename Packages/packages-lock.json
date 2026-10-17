@@ -1,11 +1,17 @@
 {
   "dependencies": {
     "com.ultraleap.tracking": {
-      "version": "7.2.0",
+      "version": "7.3.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://package.openupm.com"
+    },
+    "com.unity.2d.sprite": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
     },
     "com.unity.ai.navigation": {
       "version": "2.0.10",
