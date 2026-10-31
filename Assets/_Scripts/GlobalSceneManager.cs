@@ -26,7 +26,7 @@ public class GlobalSceneManager : MonoBehaviour
             Destroy(gameObject);
         }
         
-        LoadScene("Main");
+        initialBoot();
     }
 
     void LateUpdate()
@@ -41,6 +41,16 @@ public class GlobalSceneManager : MonoBehaviour
     {
         isLoading = !isLoading;
     }
+    
+    private async void initialBoot()
+    {
+        toggleLoading();
+        loadingCanvas.SetActive(true);
+        await Task.Delay(5000);
+        toggleLoading();
+        loadingCanvas.SetActive(false);
+    }
+
     public async void LoadScene(string sceneName)
     {
         var scene = SceneManager.LoadSceneAsync(sceneName);
@@ -51,7 +61,7 @@ public class GlobalSceneManager : MonoBehaviour
         {
             // custom logic if needed for loading screen
         } while (scene.progress < 0.9f);
-        await Task.Delay(5000);
+        await Task.Delay(2000);
         scene.allowSceneActivation = true;
         toggleLoading();
         loadingCanvas.SetActive(false);
