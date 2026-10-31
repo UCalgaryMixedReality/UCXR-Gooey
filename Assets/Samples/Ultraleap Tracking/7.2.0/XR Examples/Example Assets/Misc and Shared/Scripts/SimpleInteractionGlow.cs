@@ -101,7 +101,7 @@ namespace Leap.Examples
                 if (usePrimaryHover && _isPrimaryHovered)
                 {
                     targetColor = primaryHoverColor;
-                }
+                } 
                 else
                 {
                     if (_handHovering && useHover)
